@@ -23,7 +23,7 @@ Local Installation & Setup
 Follow these quick steps to spin up the development environment locally:
 
 1. Clone the Repository
-git clone https://github.com/YOUR_GITHUB_USERNAME/CodeAlpha_TaskFlow.git
+git clone https://github.com/priyanshi-abcd/CodeAlpha_TaskFlow.git
 cd CodeAlpha_TaskFlow
 
 2. Configure the Backend
