@@ -1,7 +1,7 @@
-⚡ TaskFlow - Full-Stack Project Management Platform
+TaskFlow - Full-Stack Project Management Platform
 TaskFlow is a high-velocity, full-stack project management application engineered to streamline project execution, manage development pipelines, and track workspace operations in real-time. Built using the MERN stack and styled with premium Tailwind CSS components.
 
-🚀 Key Features
+Key Features
 Operational Control Shells (Workspaces): Easily initialize new workspaces with dedicated scopes, milestones, and project titles.
 
 Dynamic Task Node Tracking: Manage your workflow efficiently with responsive project boards split into actionable tracking lanes.
@@ -10,7 +10,7 @@ Robust Client-Side Validation: Secure login and registration systems backed by p
 
 Premium Tech UI: Features a sleek dark/light mode transition designed for modern developer workspaces.
 
-🛠️ Tech Stack
+Tech Stack
 Frontend: React.js, Tailwind CSS, React Router DOM, Axios
 
 Backend: Node.js, Express.js
@@ -19,7 +19,7 @@ Database: MongoDB
 
 Icons & Style: Lucide React
 
-⚙️ Local Installation & Setup
+Local Installation & Setup
 Follow these quick steps to spin up the development environment locally:
 
 1. Clone the Repository
@@ -38,5 +38,5 @@ cd frontend
 npm install
 npm run dev
 
-🎯 CodeAlpha Internship Submission
+CodeAlpha Internship Submission
 This project was developed as a core full-stack submission requirement for the CodeAlpha Internship Program.
