@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Kanban, User, X, Bell, MessageSquare, Briefcase, 
-  UserPlus, UserMinus, Trash2, Sun, Moon 
+  UserPlus, UserMinus, Trash2, Sun, Moon, KeyRound 
 } from 'lucide-react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
@@ -16,6 +16,10 @@ const Navbar = () => {
   const [profileData, setProfileData] = useState({ name: '', email: '' });
   const [notifications, setNotifications] = useState([]);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
@@ -176,6 +180,9 @@ const Navbar = () => {
           email: parsedUser.email || ''
         });
       }
+      setShowPasswordSection(false);
+      setCurrentPassword('');
+      setNewPassword('');
       setIsProfileOpen(true);
     } catch (err) {
       console.error("Failed to sequence user data node from local storage", err);
@@ -204,6 +211,30 @@ const Navbar = () => {
     }
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      alert("New security phrase node must contain at least 6 characters.");
+      return;
+    }
+    try {
+      const response = await axios.put('http://localhost:5000/auth/api/change-password', 
+        { currentPassword, newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        alert("Credentials metrics updated successfully.");
+        setCurrentPassword('');
+        setNewPassword('');
+        setShowPasswordSection(false);
+      }
+    } catch (error) {
+      console.error("Password update tracking fault:", error);
+      alert(error.response?.data?.message || "Could not execute credential reset lifecycle.");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -212,11 +243,9 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ADAPTIVE STICKY NAV RECEPTACLE */}
       <nav className="sticky top-0 w-full bg-white/90 dark:bg-[#070913]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-900 px-6 py-4 z-50 transition-colors duration-300">
         <div className="w-full max-w-[1440px] mx-auto flex justify-between items-center">
 
-          {/* Left Side: Brand Identity */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-blue-600/10 p-2 rounded-lg border border-blue-500/20 group-hover:border-blue-500/40 transition-colors">
               <Kanban size={18} className="text-blue-600 dark:text-blue-400" />
@@ -226,10 +255,8 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Right Side: Navigation & Theme Mechanics */}
           <div className="flex items-center gap-4 sm:gap-6">
             
-            {/* LIVE LIGHT / DARK THEME TOGGLE BUTTON */}
             <button
               onClick={toggleTheme}
               className="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white bg-slate-100 dark:bg-[#0d1127] border border-slate-200 dark:border-slate-800/80 rounded-xl transition-all hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none"
@@ -259,7 +286,6 @@ const Navbar = () => {
                     )}
                   </button>
 
-                  {/* NOTIFICATION DROPDOWN OVERLAY */}
                   {isNotifOpen && (
                     <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-[#070913] border border-slate-200 dark:border-slate-900 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-3 duration-200">
                       <div className="p-4 border-b border-slate-100 dark:border-slate-900/80 bg-slate-50/50 dark:bg-[#0a0d1d]/40 flex justify-between items-center">
@@ -296,7 +322,6 @@ const Navbar = () => {
                   )}
                 </div>
 
-                {/* INITIALS AVATAR TRACKER */}
                 <button
                   onClick={openProfileModal}
                   className="flex items-center bg-slate-100 dark:bg-[#0d1127] border border-slate-200 dark:border-slate-800/80 p-1.5 rounded-full hover:border-slate-300 dark:hover:border-slate-700 transition-all group"
@@ -351,6 +376,7 @@ const Navbar = () => {
               </button>
             </div>
 
+            {/* IDENTITY MODIFIER SUB-FORM */}
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Full Name</label>
@@ -376,11 +402,59 @@ const Navbar = () => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/10 dark:shadow-blue-900/20"
+                className="w-full bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-colors"
               >
-                Save Profile Updates
+                Save General Changes
               </button>
             </form>
+
+            {/* SEPARATOR MATRIX */}
+            <div className="border-t border-slate-100 dark:border-slate-900/60 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowPasswordSection(!showPasswordSection)}
+                className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2 hover:underline focus:outline-none"
+              >
+                <KeyRound size={13} /> {showPasswordSection ? "Hide Security Panel" : "Change Account Password?"}
+              </button>
+            </div>
+
+            {/* COLLAPSIBLE CREDENTIAL SHIFT RECEPTACLE */}
+            {showPasswordSection && (
+              <form onSubmit={handleChangePassword} className="space-y-4 pt-2 border-t border-dashed border-slate-200 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Current Password</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 dark:bg-[#05070f] text-sm rounded-xl p-3 border border-slate-200 dark:border-slate-800/80 focus:outline-none focus:border-blue-500 text-slate-800 dark:text-slate-200 transition-colors"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">New Password</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 dark:bg-[#05070f] text-sm rounded-xl p-3 border border-slate-200 dark:border-slate-800/80 focus:outline-none focus:border-blue-500 text-slate-800 dark:text-slate-200 transition-colors"
+                    placeholder="Min 6 characters"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/10 dark:shadow-blue-900/20"
+                >
+                  Authorize Password Rewrite
+                </button>
+              </form>
+            )}
+
           </div>
         </div>
       )}
